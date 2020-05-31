@@ -19,7 +19,7 @@ def database_query(db_file, query):
 
 
 
-def simple_query(db_file, query):
+def select_query(db_file, query):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
