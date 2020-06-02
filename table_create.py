@@ -5,7 +5,7 @@ my_db = '/Users/hesam/test/db_test/all_data.db'
 my_query = """ CREATE TABLE IF NOT EXISTS events (
                                         id integer PRIMARY KEY,
                                         e_id integer NOT NULL,
-                                        datetime text NOT NULL,
+                                        date_time text NOT NULL,
                                         hold integer NOT NULL,
                                         lat integer NOT NULL,
                                         lon integer NOT NULL,
