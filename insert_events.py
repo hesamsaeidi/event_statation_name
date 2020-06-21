@@ -11,5 +11,5 @@ with open('masterEvt.list', "r") as f:
                     e_id, date_time, hold, lat, lon, depth, magnitude, unkn) VALUES
                         ({ID}, \'{i_datetime}\', {hold}, {lat}, {lon}, {depth}, {magnt}, {unkn})
                         '''
-        print(my_query)
+        # print(my_query)
         database_query(my_db,my_query)

@@ -32,3 +32,20 @@ def select_query(db_file, query):
     finally:
         if conn:
             conn.close()
+
+
+def insert_query(db_file, query):
+    # returns lastrowid
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        c.execute(query)
+        conn.commit()
+        return c.lastrowid
+    except Error as e:
+        print('error: ', e)
+
+    finally:
+        if conn:
+            conn.close()

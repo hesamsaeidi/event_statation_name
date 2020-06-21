@@ -14,19 +14,19 @@ my_query = """ CREATE TABLE IF NOT EXISTS events (
                                         unkn integer NOT NULL
 
                                     ); """
-# database_query(my_db,my_query)
+database_query(my_db,my_query)
 
 
-stations_table_query = """ CREATE TABLE IF NOT EXISTS stations (
-                                        id integer PRIMARY KEY,
-                                        num_row integer NOT NULL,
-                                        name text NOT NULL,
-                                        lat integer NOT NULL,
-                                        lon integer NOT NULL,
-                                        elev integer NOT NULL,
-                                        unkn1 integer NOT NULL,
-                                        unkn2 integer NOT NULL
-
-                                    ); """
-
-database_query(my_db, stations_table_query)
+# stations_table_query = """ CREATE TABLE IF NOT EXISTS stations (
+#                                         id integer PRIMARY KEY,
+#                                         num_row integer NOT NULL,
+#                                         name text NOT NULL,
+#                                         lat integer NOT NULL,
+#                                         lon integer NOT NULL,
+#                                         elev integer NOT NULL,
+#                                         unkn1 integer NOT NULL,
+#                                         unkn2 integer NOT NULL
+#
+#                                     ); """
+#
+# database_query(my_db, stations_table_query)

@@ -17,14 +17,14 @@ def lat_lon_conv(lat, lon):
     new_lon = (float(lon) + 360) % 360
     return co_lat, new_lon
 
-t_delta = datetime.timedelta(minutes=10)
+t_delta = datetime.timedelta(minutes=5)
 # defining the db in use
 my_db = '/Users/hesam/test/db_test/all_data.db'
 
 # query of searching for location needs 4 int as a square search
 # in this order: min_lat, max_lat, min_lon, max_lon
 my_query = """SELECT
-                    id, e_id, lat, lon, date_time
+                    id, e_id, lat, lon, depth, date_time
                 FROM
                     events
                 WHERE
@@ -37,11 +37,13 @@ my_query = """SELECT
                     AND '{}'"""
 
 
-with open('1C_events.txt', "r") as f:
+with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
     newEvents = f.readlines()
 
     for entry in newEvents:
+        # $yr," ",$mon," ",$day," ",$hr," ",$min," ",$sec," ",$elat," ",$elon," ",$edepth," ",$dummyMagn
         raw_list = entry.split()
+
 
         # create datetime obj for newEvents
         temp_date = [int(float(x)) for x in raw_list[0:6]]
@@ -49,6 +51,7 @@ with open('1C_events.txt', "r") as f:
 
         # split lat and lon
         entry_lat , entry_lon = lat_lon_conv(*raw_list[6:8])
+        entry_depth = raw_list[8]
 
         # create the square search criteria
         min_lat = math.floor(entry_lat)
@@ -60,6 +63,7 @@ with open('1C_events.txt', "r") as f:
 
         location_search_query = my_query.format(min_lat, max_lat, min_lon, max_lon)
         search_query = select_query(my_db, location_search_query)
+        close_events = []
         for q in search_query:
             try:
                 q_dt_obj = datetime.datetime.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')
@@ -68,4 +72,9 @@ with open('1C_events.txt', "r") as f:
                 q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
 
             if t_delta > abs(q_dt_obj - entry_dt_obj):
-                print(q[0:], entry, entry_dt_obj)
+                close_events.append([q,abs(q_dt_obj - entry_dt_obj)])
+                # print(q[0:], entry, entry_dt_obj)
+        # print(close_events)
+        print(len(close_events))
+        for i in close_events:
+            print(round(entry_lat,2), round(entry_lon,2), '>>>', round(i[0][2],2), round(i[0][3],2),i[1])
