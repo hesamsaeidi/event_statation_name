@@ -24,13 +24,17 @@ import time
 #         """
 # print(insert_query(my_db, query))
 
-
-st_insert_query = """INSERT INTO stations(
-                        num_row, name, lat, lon, elev, unkn1, unkn2)
-                        VALUES(
-                            {}, \'{}\', {}, {}, {}, 0, 0
-                        )
-                    """
-
-a=st_insert_query.format(1,'s',2,3,4)
-print(a)
+#
+# st_insert_query = """INSERT INTO stations(
+#                         num_row, name, lat, lon, elev, unkn1, unkn2)
+#                         VALUES(
+#                             {}, \'{}\', {}, {}, {}, 0, 0
+#                         )
+#                     """
+#
+# a=st_insert_query.format(1,'s',2,3,4)
+# print(a)
+gen = [[3,1], [4,0.5], [5,0.25]]
+from operator import itemgetter
+l = min(gen,key=itemgetter(1))
+print(l)

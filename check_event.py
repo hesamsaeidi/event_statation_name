@@ -3,6 +3,8 @@ from query import select_query
 import datetime
 import math
 import time
+from operator import itemgetter
+
 
 
 
@@ -23,7 +25,7 @@ my_db = '/Users/hesam/test/db_test/all_data.db'
 
 # query of searching for location needs 4 int as a square search
 # in this order: min_lat, max_lat, min_lon, max_lon
-my_query = """SELECT
+ev_search_query = """SELECT
                     id, e_id, lat, lon, depth, date_time
                 FROM
                     events
@@ -35,6 +37,14 @@ my_query = """SELECT
                     lon
                     BETWEEN '{}'
                     AND '{}'"""
+
+ev_insert_query = """INSERT INTO
+                        events(
+                        e_id, date_time, hold, lat, lon, depth, magnitude, unkn
+                    )
+                    VALUES(
+                        {}, {}, 0, {}, {}, {}, 6, 0
+                    )"""
 
 
 with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
@@ -61,7 +71,7 @@ with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
 
 
 
-        location_search_query = my_query.format(min_lat, max_lat, min_lon, max_lon)
+        location_search_query = ev_search_query.format(min_lat, max_lat, min_lon, max_lon)
         search_query = select_query(my_db, location_search_query)
         close_events = []
         for q in search_query:
@@ -73,8 +83,13 @@ with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
 
             if t_delta > abs(q_dt_obj - entry_dt_obj):
                 close_events.append([q,abs(q_dt_obj - entry_dt_obj)])
-                # print(q[0:], entry, entry_dt_obj)
-        # print(close_events)
-        print(len(close_events))
-        for i in close_events:
-            print(round(entry_lat,2), round(entry_lon,2), '>>>', round(i[0][2],2), round(i[0][3],2),i[1])
+
+        if len(close_events) == 0:
+            print("nothing found! insert into database", entry)
+
+        elif len(close_events) == 1:
+            print("event found, extract info", q)
+
+        else:
+            desired_event = min(close_events,key=itemgetter(1))
+            print(desired_event)
