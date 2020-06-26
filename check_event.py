@@ -1,5 +1,6 @@
 from query import database_query
 from query import select_query
+from query import insert_query
 import datetime
 import math
 import time
@@ -15,9 +16,15 @@ def my_round(x):
 def lat_lon_conv(lat, lon):
     # lat and lon stored in master dataset as colatitude (0-180) and positive longitude (0-360)
     # for the sake of comparison this function convert the input lat and lon to the desired values
-    co_lat = 90 - float(lat)
-    new_lon = (float(lon) + 360) % 360
+    co_lat = round(90 - float(lat),4)
+    new_lon = round((float(lon) + 360) % 360, 4)
     return co_lat, new_lon
+
+def write_to_file(dtobj, lat, lon, depth, evt_num):
+    out_dt = dtobj.strftime("%Y %m %d %H %M %S")
+    out_str = out_dt + " " + str(lat) + " " + str(lon) + " " + str(depth) + " " + str(evt_num) + "\n"
+    with open("events_wNums.txt", "a") as tempfile:
+        tempfile.write(out_str)
 
 t_delta = datetime.timedelta(minutes=5)
 # defining the db in use
@@ -43,11 +50,11 @@ ev_insert_query = """INSERT INTO
                         e_id, date_time, hold, lat, lon, depth, magnitude, unkn
                     )
                     VALUES(
-                        {}, {}, 0, {}, {}, {}, 6, 0
+                        17, \'{}\', 0, {}, {}, {}, 6, 0
                     )"""
 
 
-with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
+with open('NETWORKS/EVENTS/IB_events.txt', "r") as f:
     newEvents = f.readlines()
 
     for entry in newEvents:
@@ -76,20 +83,35 @@ with open('NETWORKS/EVENTS/2H_events.txt', "r") as f:
         close_events = []
         for q in search_query:
             try:
-                q_dt_obj = datetime.datetime.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')
-            except ValueError:
-                print(">>> ValueError for 60 seconds or 60 minutes:")
-                q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
+                try:
+                    # q_dt_obj = datetime.datetime.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')
+                    q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
 
+                except ValueError:
+                    #     # print(">>> ValueError for 60 seconds or 60 minutes:")
+                    #     q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
+                    # except Exception as e:
+                    #     print("ERROR: ", e)
+                    q_dt_obj = datetime.datetime.strptime(q[-1], '%Y-%m-%d %H:%M:%S')
+            except Exception as e:
+                print("ERROR!!! ", e)
+                pass
             if t_delta > abs(q_dt_obj - entry_dt_obj):
                 close_events.append([q,abs(q_dt_obj - entry_dt_obj)])
 
         if len(close_events) == 0:
-            print("nothing found! insert into database", entry)
+            ins_query = ev_insert_query.format(entry_dt_obj, entry_lat, entry_lon, entry_depth)
+            Evnt_num = insert_query(my_db, ins_query)
+            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+            # print("nothing found! insert into database", entry)
 
         elif len(close_events) == 1:
-            print("event found, extract info", q)
+            Evnt_num = close_events[0][0][0]
+            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+            # print("event found, extract info", close_events[0][0][0])
 
         else:
             desired_event = min(close_events,key=itemgetter(1))
-            print(desired_event)
+            Evnt_num = desired_event[0][0]
+            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+            # print(desired_event)
