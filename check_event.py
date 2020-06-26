@@ -5,9 +5,15 @@ import datetime
 import math
 import time
 from operator import itemgetter
+import sys
 
 
-
+# network name must be inserted as second arg
+try:
+    netwrok_name = str(sys.argv[1])
+except IndexError:
+    print("you need to insert network name!")
+    sys.exit(1)
 
 def my_round(x):
     # my function to round int to 0.25
@@ -23,7 +29,7 @@ def lat_lon_conv(lat, lon):
 def write_to_file(dtobj, lat, lon, depth, evt_num):
     out_dt = dtobj.strftime("%Y %m %d %H %M %S")
     out_str = out_dt + " " + str(lat) + " " + str(lon) + " " + str(depth) + " " + str(evt_num) + "\n"
-    with open("events_wNums.txt", "a") as tempfile:
+    with open(f"NETWORKS/EVT_WNUM/{netwrok_name}_events_wNums.txt", "a") as tempfile:
         tempfile.write(out_str)
 
 t_delta = datetime.timedelta(minutes=5)
@@ -50,11 +56,11 @@ ev_insert_query = """INSERT INTO
                         e_id, date_time, hold, lat, lon, depth, magnitude, unkn
                     )
                     VALUES(
-                        17, \'{}\', 0, {}, {}, {}, 6, 0
+                        61, \'{}\', 0, {}, {}, {}, 6, 0
                     )"""
 
 
-with open('NETWORKS/EVENTS/IB_events.txt', "r") as f:
+with open(f'NETWORKS/EVENTS/{netwrok_name}_events.txt', "r") as f:
     newEvents = f.readlines()
 
     for entry in newEvents:
@@ -88,10 +94,7 @@ with open('NETWORKS/EVENTS/IB_events.txt', "r") as f:
                     q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
 
                 except ValueError:
-                    #     # print(">>> ValueError for 60 seconds or 60 minutes:")
-                    #     q_dt_obj = datetime.datetime.fromtimestamp(time.mktime(time.strptime(q[-1], '%Y-%m-%d %H:%M:%S.%f')))
-                    # except Exception as e:
-                    #     print("ERROR: ", e)
+
                     q_dt_obj = datetime.datetime.strptime(q[-1], '%Y-%m-%d %H:%M:%S')
             except Exception as e:
                 print("ERROR!!! ", e)
@@ -103,15 +106,12 @@ with open('NETWORKS/EVENTS/IB_events.txt', "r") as f:
             ins_query = ev_insert_query.format(entry_dt_obj, entry_lat, entry_lon, entry_depth)
             Evnt_num = insert_query(my_db, ins_query)
             write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
-            # print("nothing found! insert into database", entry)
 
         elif len(close_events) == 1:
             Evnt_num = close_events[0][0][0]
             write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
-            # print("event found, extract info", close_events[0][0][0])
 
         else:
             desired_event = min(close_events,key=itemgetter(1))
             Evnt_num = desired_event[0][0]
             write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
-            # print(desired_event)
