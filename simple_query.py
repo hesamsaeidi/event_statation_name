@@ -1,5 +1,5 @@
 from query import select_query
-
+from pprint import pprint
 my_db = '/Users/hesam/test/db_test/all_data.db'
 # my_query = '''select
 #                     id
@@ -15,22 +15,35 @@ my_db = '/Users/hesam/test/db_test/all_data.db'
 #                     integer)
 #                     limit 5'''
 
-my_query = """SELECT
-                    COUNT(*) id
-                FROM
-                    events
-                WHERE
-                    lat
-                    BETWEEN '{}'
-                    AND '{}'
-                AND
-                    lon
-                    BETWEEN '{}'
-                    AND '{}'"""
+# my_query = """SELECT
+#                     COUNT(*) id
+#                 FROM
+#                     events
+#                 WHERE
+#                     lat
+#                     BETWEEN '{}'
+#                     AND '{}'
+#                 AND
+#                     lon
+#                     BETWEEN '{}'
+#                     AND '{}'"""
+
+my_query = """SELECT * from stations
+                LIMIT 25"""
 
 
 
-
-resutl = select_query(my_db, my_query.format('77', '87', '98', '109'))
-print(resutl)
+resutl = select_query(my_db, my_query)
+print("first 25 rows: \n")
+pprint(resutl)
 # print(my_query.format('2014-01-01 00:00:00', '2015-01-1 00:00:00'))
+
+
+my_query = """SELECT * from stations
+                ORDER BY id DESC LIMIT 25"""
+
+
+
+nresutl = select_query(my_db, my_query)
+print("last 25 rows: \n")
+pprint(nresutl)
