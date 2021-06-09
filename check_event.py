@@ -102,16 +102,18 @@ with open(f'NETWORKS/EVENTS/{netwrok_name}_events.txt', "r") as f:
             if t_delta > abs(q_dt_obj - entry_dt_obj):
                 close_events.append([q,abs(q_dt_obj - entry_dt_obj)])
 
-        if len(close_events) == 0:
-            ins_query = ev_insert_query.format(entry_dt_obj, entry_lat, entry_lon, entry_depth)
-            Evnt_num = insert_query(my_db, ins_query)
-            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+print(close_events)
 
-        elif len(close_events) == 1:
-            Evnt_num = close_events[0][0][0]
-            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
-
-        else:
-            desired_event = min(close_events,key=itemgetter(1))
-            Evnt_num = desired_event[0][0]
-            write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+        # if len(close_events) == 0:
+        #     ins_query = ev_insert_query.format(entry_dt_obj, entry_lat, entry_lon, entry_depth)
+        #     Evnt_num = insert_query(my_db, ins_query)
+        #     write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+        #
+        # elif len(close_events) == 1:
+        #     Evnt_num = close_events[0][0][0]
+        #     write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
+        #
+        # else:
+        #     desired_event = min(close_events,key=itemgetter(1))
+        #     Evnt_num = desired_event[0][0]
+        #     write_to_file(entry_dt_obj, entry_lat, entry_lon, entry_depth, Evnt_num)
