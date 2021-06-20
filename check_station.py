@@ -2,11 +2,17 @@ from query import database_query
 from query import select_query
 from query import insert_query
 import datetime
+import sys
 import math
 import time
 
+# network name must be inserted as second arg
+try:
+    netwrok_name = str(sys.argv[1])
+except IndexError:
+    print("you need to insert network name!")
+    sys.exit(1)
 
-last_num_row = 23185
 
 def lat_lon_conv(lat, lon):
     # lat and lon stored in master dataset as colatitude (0-180) and positive longitude (0-360)
@@ -34,6 +40,10 @@ def location_checker(lat_1, lon_1, lat_2, lon_2):
 
 my_db = '/Users/hesam/test/db_test/all_data.db'
 
+lastrowid_query = 'SELECT id from stations order by ID DESC limit 1'
+last_num_row = int(select_query(my_db, lastrowid_query)[0][0])
+
+
 st_search_query = """SELECT
                 id, num_row, name, lat, lon
             FROM
@@ -49,7 +59,7 @@ st_insert_query = """INSERT INTO stations(
                     """
 
 station_dict = {}
-with open('NETWORKS/STATIONS/ZV_sta_evt_predTT.out', "r") as f:
+with open(f'NETWORKS/STATIONS/{netwrok_name}_sta_evt_predTT.out', "r") as f:
     newStats = f.readlines()
 
     for entry in newStats:

@@ -1,19 +1,19 @@
 from query import select_query
 from pprint import pprint
 my_db = '/Users/hesam/test/db_test/all_data.db'
-my_query = '''select
-                    id
-                from
-                    events
-                where
-                    CAST(strftime('%s', date_time)
-                    AS
-                    integer)
-                    >
-                    CAST(strftime('%s', '{}')
-                    AS
-                    integer)
-                    limit 5'''
+# my_query = '''select
+#                     id
+#                 from
+#                     events
+#                 where
+#                     CAST(strftime('%s', date_time)
+#                     AS
+#                     integer)
+#                     >
+#                     CAST(strftime('%s', '{}')
+#                     AS
+#                     integer)
+#                     limit 5'''
 
 # my_query = """SELECT
 #                     COUNT(*) id
@@ -44,6 +44,10 @@ my_query = '''select
 
 
 
-nresutl = select_query(my_db, my_query)
-print("last 25 rows: \n")
-pprint(nresutl)
+my_query = 'SELECT id from stations order by ID DESC limit 1'
+
+
+nresutl = int(select_query(my_db, my_query)[0][0])
+print(nresutl)
+# print("last 25 rows: \n")
+# pprint(nresutl)
