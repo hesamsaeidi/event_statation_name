@@ -3,4 +3,5 @@ github_iMac_lab.pub
 *.db
 *.log
 test.py
-NETWORKS_old
+NETWORKS_old/
+NETWORKS/
